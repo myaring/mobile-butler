@@ -7,3 +7,4 @@ md 파일이 아니더라도 기획서라던가 제안서라던가 싹 담는 �
 * [pr 룰](PR_rules.md)
 * [기여 양식](contribute_rules.md)
 * [디자인](design.md)
+* [개발 일지](dev-log.md)
