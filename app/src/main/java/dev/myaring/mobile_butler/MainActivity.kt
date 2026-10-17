@@ -21,7 +21,7 @@ class MainActivity : ComponentActivity() {
             MobilebutlerTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     Greeting(
-                        name = "Myaing!",
+                        name = "Myaring",
                         modifier = Modifier.padding(innerPadding)
                     )
                 }
