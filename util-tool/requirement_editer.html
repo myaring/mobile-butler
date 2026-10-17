@@ -145,7 +145,7 @@ function toMd(blocks) {
 /* ===== 끝 ===== */
 
 const STATUS = ['작업 전', '작업 중', '완료'];
-const PRIORITY = [['🔴', '🔴 꼭 필요'], ['🟡', '🟡 있으면 좋음'], ['⚪', '⚪ 나중에']];
+const PRIORITY = [['1', '1 (가장 높음)'], ['2', '2'], ['3', '3'], ['4', '4'], ['5', '5 (가장 낮음)']];
 
 let blocks = [], handle = null, fileName = '명세서.md', dirty = false, mode = 'table';
 const $ = id => document.getElementById(id);
