@@ -1,7 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
-    id("com.google.devtools.ksp")
+    alias(libs.plugins.ksp)
 }
 
 android {
@@ -24,7 +24,12 @@ android {
         release {
             optimization {
                 enable = true
-                packageScope = setOf("androidx.**", "kotlin.**", "kotlinx.**")
+                packageScope = setOf(
+                    "dev.myaring.mobile_butler.**",
+                    "androidx.**",
+                    "kotlin.**",
+                    "kotlinx.**"
+                )
             }
         }
     }
@@ -38,10 +43,8 @@ android {
 }
 
 dependencies {
-    val room_version = "3.0.3"
-
-    implementation("androidx.room3:room3-runtime:$room_version")
-    ksp("androidx.room3:room3-compiler:$room_version")
+    implementation(libs.androidx.room3.runtime)
+    ksp(libs.androidx.room3.compiler)
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.compose.material3)
