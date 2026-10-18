@@ -8,3 +8,7 @@ md 파일이 아니더라도 기획서라던가 제안서라던가 싹 담는 �
 * [기여 양식](contribute_rules.md)
 * [디자인](design.md)
 * [개발 일지](dev-log.md)
+* [요구사항 · 기능 명세서](requirement_analysis.md)
+* [킥오프 발표 자료](mobile-butler-kickoff.pdf)
+* [기능 정의 초안](draft/hss900606_draft.md)
+* [킥오프 미팅 메모](draft/261018_kickoff_meeting.md)
