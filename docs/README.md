@@ -44,6 +44,7 @@
 * [킥오프 발표 자료](mobile-butler-kickoff.pdf) — 2026-10-17 발표본. 일정·시즌 범위의 기준
 * [기능 정의 초안](draft/hss900606_draft.md) — 목표 유형 체계, 페이싱 엔진, 집사 알림, 데이터 모델, 시즌 구분
 * [킥오프 미팅 메모](draft/261018_kickoff_meeting.md) — 기능 브레인스토밍 기록
+* [2차 시안 설명서 (Android)](draft/hss900606_draft_261024.md) — 화면설계서를 UX 원리로 분석해 고친 Figma 2차 시안, Compose 기준 레이어 구조
 
 ### 기록
 
