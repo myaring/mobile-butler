@@ -42,7 +42,15 @@ android {
     }
 }
 
+ksp {
+    arg(
+        "room.schemaLocation",
+        "$projectDir/schemas"
+    )
+}
+
 dependencies {
+    implementation(libs.androidx.sqlite.bundled)
     implementation(libs.androidx.room3.runtime)
     ksp(libs.androidx.room3.compiler)
     implementation(platform(libs.androidx.compose.bom))
