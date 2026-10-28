@@ -11,6 +11,7 @@ composeBom = "2026.02.01"
 ksp = "2.3.4"
 room = "3.0.3"
 sqlite = "2.7.1"
+room3Common = "3.0.3"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -30,6 +31,7 @@ androidx-compose-material3 = { group = "androidx.compose.material3", name = "mat
 androidx-room3-runtime = { group = "androidx.room3", name = "room3-runtime", version.ref = "room" }
 androidx-room3-compiler = { group = "androidx.room3", name = "room3-compiler", version.ref = "room" }
 androidx-sqlite-bundled = { group = "androidx.sqlite", name = "sqlite-bundled", version = "sqlite" }
+androidx-room3-common = { group = "androidx.room3", name = "room3-common", version.ref = "room3Common" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

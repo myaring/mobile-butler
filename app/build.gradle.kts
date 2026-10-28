@@ -49,7 +49,17 @@ ksp {
     )
 }
 
+configurations.matching {
+    it.name == "debugUnitTestRuntimeClasspath"
+}.configureEach {
+    resolutionStrategy.dependencySubstitution {
+        substitute(module("androidx.sqlite:sqlite-bundled"))
+            .using(module("androidx.sqlite:sqlite-bundled-jvm:2.7.1"))
+    }
+}
+
 dependencies {
+    implementation(libs.androidx.room3.common)
     implementation(libs.androidx.sqlite.bundled)
     implementation(libs.androidx.room3.runtime)
     ksp(libs.androidx.room3.compiler)
