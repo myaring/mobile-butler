@@ -1,5 +1,6 @@
 package dev.myaring.mobile_butler.ui.navigation
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -10,16 +11,44 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
+import dev.myaring.mobile_butler.domain.viewmodel.ITopBarViewModel
 import dev.myaring.mobile_butler.domain.viewmodel.SettingScreenViewModel
+import dev.myaring.mobile_butler.domain.viewmodel.TodayScreenViewModel
 import dev.myaring.mobile_butler.ui.theme.MbSpacing
 import dev.myaring.mobile_butler.ui.theme.MobilebutlerTheme
 
 public val settingScreenImpl = Screen(
-    screenDrawerDelegateeOrNull = { SettingScreen() },
+    eScreen = EScreen.SETTING,
+    screenDrawerDelegateeOrNull = ::SettingScreenRouter,
 )
 
 @Composable
-private fun SettingScreen(viewModel: SettingScreenViewModel = viewModel())
+private fun SettingScreenRouter(onNotifyTopBar: (ITopBarViewModel) -> Unit, modifier: Modifier)
+{
+    val viewModel: SettingScreenViewModel = viewModel()
+
+    onNotifyTopBar(viewModel)
+    SettingScreenContent(viewModel, modifier)
+}
+
+@SuppressLint("ViewModelConstructorInComposable")
+@Preview
+@Composable
+private fun TodayScreenRouterPreview()
+{
+    val viewModel: SettingScreenViewModel = SettingScreenViewModel()
+
+    MobilebutlerTheme() {
+        SettingScreenContent(
+            viewModel = viewModel,
+            modifier = Modifier)
+    }
+}
+
+@Composable
+private fun SettingScreenContent(
+    viewModel: SettingScreenViewModel,
+    modifier: Modifier)
 {
     Column(
         modifier = Modifier
@@ -30,11 +59,4 @@ private fun SettingScreen(viewModel: SettingScreenViewModel = viewModel())
     ) {
         Text("This page is ${EScreen.SETTING.name}.")
     }
-}
-
-@Preview
-@Composable
-private fun SettingScreenPreview()
-{
-    MobilebutlerTheme() { SettingScreen() }
 }
