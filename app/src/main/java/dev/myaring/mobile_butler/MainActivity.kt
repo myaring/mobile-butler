@@ -114,7 +114,7 @@ private fun AppContent(navController: NavHostController, padding: PaddingValues)
 }
 
 @Composable
-fun AppNavigation(navController: NavHostController, modifier: Modifier = Modifier)
+fun AppNavigation(navController: NavHostController, modifier: Modifier)
 {
     val implScreens: Map<EScreen, Screen> = LocalContext.current.appContainer.implScreens
 
