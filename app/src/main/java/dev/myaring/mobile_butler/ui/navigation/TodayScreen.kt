@@ -15,7 +15,7 @@ import dev.myaring.mobile_butler.ui.theme.MbSpacing
 import dev.myaring.mobile_butler.ui.theme.MobilebutlerTheme
 
 public val todayScreenImpl = Screen(
-    screenDrawerDelegatee = { TodayScreen() },
+    screenDrawerDelegateeOrNull = { TodayScreen() },
 )
 
 @Composable

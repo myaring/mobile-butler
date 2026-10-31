@@ -15,7 +15,7 @@ import dev.myaring.mobile_butler.ui.theme.MbSpacing
 import dev.myaring.mobile_butler.ui.theme.MobilebutlerTheme
 
 public val scheduleScreenImpl = Screen(
-    screenDrawerDelegatee = { ScheduleScreen() },
+    screenDrawerDelegateeOrNull = null,
 )
 
 @Composable

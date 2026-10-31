@@ -15,7 +15,7 @@ import dev.myaring.mobile_butler.ui.theme.MbSpacing
 import dev.myaring.mobile_butler.ui.theme.MobilebutlerTheme
 
 public val settingScreenImpl = Screen(
-    screenDrawerDelegatee = null,
+    screenDrawerDelegateeOrNull = { SettingScreen() },
 )
 
 @Composable

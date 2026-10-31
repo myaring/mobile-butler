@@ -68,7 +68,7 @@ private fun AppNavigationBar(navController: NavHostController)
             NavigationBarItem(
                 selected = (currentRoute == eScreen.name),
                 onClick = {
-                    if (implScreens[eScreen]?.screenDrawerDelegatee == null)
+                    if (implScreens[eScreen]?.screenDrawerDelegateeOrNull == null)
                     {
                         // 화면이 준비되지 않은 경우의 내비게이션 버튼 동작
                         showNotReadyDialog = true
@@ -124,7 +124,7 @@ fun AppNavigation(navController: NavHostController, modifier: Modifier)
     ) {
         for (eScreen in EScreen.entries)
         {
-            val drawer = implScreens[eScreen]?.screenDrawerDelegatee
+            val drawer = implScreens[eScreen]?.screenDrawerDelegateeOrNull
 
             if (drawer != null)
             {
