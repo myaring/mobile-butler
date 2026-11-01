@@ -1,56 +1,69 @@
 package dev.myaring.mobile_butler.ui.theme
 
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.dynamicDarkColorScheme
-import androidx.compose.material3.dynamicLightColorScheme
-import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 
-private val DarkColorScheme = darkColorScheme(
-    primary = Purple80,
-    secondary = PurpleGrey80,
-    tertiary = Pink80
-)
+private val MbDarkColorScheme = darkColorScheme(
+    primary = MbPrimary,
+    onPrimary = MbOnPrimary,
+    inversePrimary = MbInversePrimary,
 
-private val LightColorScheme = lightColorScheme(
-    primary = Purple40,
-    secondary = PurpleGrey40,
-    tertiary = Pink40
+    primaryContainer = MbSurfaceContainer,
+    onPrimaryContainer = MbOnSurface,
 
-    /* Other default colors to override
-    background = Color(0xFFFFFBFE),
-    surface = Color(0xFFFFFBFE),
-    onPrimary = Color.White,
-    onSecondary = Color.White,
-    onTertiary = Color.White,
-    onBackground = Color(0xFF1C1B1F),
-    onSurface = Color(0xFF1C1B1F),
-    */
+    secondaryContainer = MbSecondaryContainer,
+    onSecondaryContainer = MbOnSurface,
+
+    secondary = MbOnSurfaceVariant,
+    onSecondary = MbBackground,
+
+    tertiary = MbRecordDone,
+    onTertiary = MbOnTertiary,
+
+    background = MbBackground,
+    onBackground = MbOnBackground,
+
+    surface = MbBackground,
+    onSurface = MbOnSurface,
+    inverseSurface = MbOnSurface,
+    inverseOnSurface = MbSurfaceContainer,
+
+    surfaceVariant = MbSurfaceVariant,
+    onSurfaceVariant = MbOnSurfaceVariant,
+
+    surfaceContainer = MbSurfaceContainer,
+    surfaceContainerLow = MbBackground,
+    surfaceContainerHigh = MbSurfaceVariant,
+    surfaceContainerHighest = MbSurfaceVariant,
+
+    surfaceBright = MbSurfaceVariant,
+    surfaceDim = MbBackground,
+
+    outline = MbOutline,
+    outlineVariant = MbOutlineVariant,
+
+    error = MbError,
+    onError = MbOnError
 )
 
 @Composable
 fun MobilebutlerTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
-    // Dynamic color is available on Android 12+
-    dynamicColor: Boolean = true,
+    dynamicColor: Boolean = false,
     content: @Composable () -> Unit
 ) {
-    val colorScheme = when {
-        dynamicColor -> {
-            val context = LocalContext.current
-            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
-        }
-
-        darkTheme -> DarkColorScheme
-        else -> LightColorScheme
+    val colorScheme = if (dynamicColor) {
+        dynamicDarkColorScheme(LocalContext.current)
+    } else {
+        MbDarkColorScheme
     }
 
     MaterialTheme(
         colorScheme = colorScheme,
         typography = Typography,
+        shapes = MbShapes,
         content = content
     )
 }

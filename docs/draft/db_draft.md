@@ -85,7 +85,35 @@
 | `healthDataType` | `HealthDataType?` | 자동 연동 전용. 시즌 1: `null` |
 | `priority` | `Int` | 목표 카드 노출 순서 |
 | `restDays` | `Set<DayOfWeek>` | 분량 계산 시 제외할 요일. 시즌 1 적용 범위 협의 필요 |
-| `status` | `GoalStatus` | `ACTIVE` / `COMPLETED` / `ARCHIVED` |
+| `status` | `GoalStatus` | `ACTIVE` / `COMPLETED` / `ARCHIVED`(DEPRECATED) |
+| `endReason` | `EndReason?` | 끝난 이유. `ACTIVE`이면 `null`, `COMPLETED`이면 값이 있음 |
+| `endedAt` | `LocalDate?` | 사용자가 끝낸 날. `ACTIVE`이면 `null`, `COMPLETED`이면 값이 있음 |
+| `overdueNoticeShown` | `Boolean` | 마감 지난 목표의 첫 안내 팝업을 보여 주었는지. 기본 `false` |
+
+> **`ARCHIVED`는 DEPRECATED입니다** ([#39](https://github.com/myaring/mobile-butler/issues/39)). 마감이 지난 목표도 사용자가 고를 때까지 `ACTIVE`로 두고, 끝난 목표는 이유와 관계없이 `COMPLETED`로 저장하는 방향으로 정리되었습니다. 끝난 이유는 `endReason`으로 구분합니다. 값은 당장 지우지 않고 남겨 두지만, 새 코드에서는 쓰지 않습니다.
+
+```kotlin
+enum class GoalStatus {
+    ACTIVE,
+    COMPLETED,
+
+    @Deprecated("끝난 목표는 COMPLETED와 endReason으로 구분합니다 (#39). 새 코드에서 쓰지 않습니다.")
+    ARCHIVED,
+}
+
+enum class EndReason {
+    ACHIEVED, // 기록으로 목표량에 도달
+    DEADLINE, // 마감이 지난 뒤 "여기서 마무리"
+    MANUAL,   // 마감 전에 직접 끝냄 (보관함 상세에 "조기 종료" 태그)
+}
+```
+
+**`endReason`·`endedAt` 규칙** ([#39](https://github.com/myaring/mobile-butler/issues/39), [#44](https://github.com/myaring/mobile-butler/issues/44))
+
+- `endedAt`은 마감일이 아니라 **사용자가 끝낸 날**입니다. 마감일은 `dueDate`에 이미 있으므로 정보가 겹치지 않게 합니다.
+- 마감이 지난 목표를 직접 끝내면 `MANUAL`이 아니라 `DEADLINE`으로 남깁니다.
+- 완료한 목표를 되돌리면 `status`는 `ACTIVE`로, `endReason`과 `endedAt`은 `null`로 돌아갑니다.
+- "마감 지남"은 저장하지 않고 `dueDate`와 오늘 날짜로 계산합니다. 그래서 자정에 상태를 바꾸는 작업이 필요 없습니다.
 
 **시즌 1에서 사용 가능한 조합**
 
@@ -138,7 +166,7 @@ enum class EntrySource {
 
 #### 삭제 정책 (미확정)
 
-- `ARCHIVED`는 목표를 숨기거나 비활성화할 뿐, **기록을 지우지 않습니다.**
+- 보관함으로 옮긴 목표(`COMPLETED`)는 목록에서 빠질 뿐, **기록을 지우지 않습니다.** DEPRECATED인 `ARCHIVED`도 마찬가지입니다.
 - 목표의 영구 삭제를 허용한다면 연관 기록까지 지울지, 사용자에게 복구 경고를 보여줄지 합의해야 합니다.
 - 따라서 외래키의 `ON DELETE CASCADE`도 아직 확정하지 않습니다.
 

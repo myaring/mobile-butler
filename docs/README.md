@@ -20,6 +20,7 @@
 | --- | --- |
 | 만들 기능과 담당자, 완료 기준 | [요구사항 · 기능 명세서](requirement_analysis.md) |
 | 화면 디자인 정의 | [디자인](design.md) |
+| 저장하는 데이터, 목표 상태, 계산 규칙 | [데이터 모델](data_model.md) |
 | 오늘 한 작업, 삽질하다 알게 된 것 | [개발 일지](dev-log/README.md) |
 | 아직 정리되지 않은 개인 아이디어·초안 | [draft/](draft/) |
 | 참고용 이미지, 외부 자료 | [reference/](reference/) |
@@ -40,11 +41,14 @@
 
 * [요구사항 · 기능 명세서](requirement_analysis.md) — REQ·FUNC 목록, 우선순위, 담당, 완료 기준
   * 표를 직접 편집하기 번거로우면 [명세서 편집기](../util-tool/requirement_editer.html)를 브라우저로 열어 쓰시면 됩니다
-* [디자인](design.md) — 실제 화면에 나올 디자인 정의와 개요
+* [디자인](design.md) — 화면 디자인의 정본. 공통 규칙, 화면별 동작, 컴포넌트, 색·간격 토큰
+* [데이터 모델](data_model.md) — 데이터의 정본. `Goal`·`ProgressEntry` 필드, 목표 상태 전이표, 오늘의 목표·기록 칸 계산 규칙
 * [킥오프 발표 자료](mobile-butler-kickoff.pdf) — 2026-10-17 발표본. 일정·시즌 범위의 기준
 * [기능 정의 초안](draft/hss900606_draft.md) — 목표 유형 체계, 페이싱 엔진, 집사 알림, 데이터 모델, 시즌 구분
 * [킥오프 미팅 메모](draft/261018_kickoff_meeting.md) — 기능 브레인스토밍 기록
-* [2차 시안 설명서 (Android)](draft/hss900606_draft_261024.md) — 화면설계서를 UX 원리로 분석해 고친 Figma 2차 시안, Compose 기준 레이어 구조
+* [화면설계서 v0.2](draft/UI.md) — 1차 시안 설명. 내용은 [디자인](design.md)으로 합쳐졌고 기록용으로 남김
+* [2차 시안 설명서 (Android)](draft/hss900606_draft_261024.md) — 화면설계서를 UX 원리로 분석해 고친 Figma 2차 시안, Compose 기준 레이어 구조. 합의된 내용은 [디자인](design.md)으로 옮김
+* [DB 설계 초안](draft/db_draft.md) — 저장소 선택, 테이블·Repository 구조 제안. 합의된 내용은 [데이터 모델](data_model.md)로 옮김
 
 ### 기록
 

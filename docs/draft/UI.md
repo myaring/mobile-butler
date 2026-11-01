@@ -4,6 +4,8 @@
 > 
 > v0.2 · 2026-10-24 · 탭별 서브 화면 시안 설명
 
+> **이 문서는 더 이상 기준이 아닙니다.** 2026-10-27에 내용을 [디자인 정본](../design.md)으로 합쳤고, 기록용으로 `draft/`에 남겨 둡니다. 내용이 다르면 `design.md`를 따릅니다.
+
 ## 문서 안내
 
 이 문서는 모바일 집사 어플리케이션의 화면 구성과 동작을 참여자 모두가 같은 기준으로 볼 수 있게 정리한 화면설계서입니다.
@@ -65,7 +67,7 @@
 
 ## 오늘 탭 (T-01, T-02)
 
-[오늘 탭 시안](./reference/today.png)
+[오늘 탭 시안](../reference/today.png)
 
 오늘 할 목표를 한 화면에서 확인하고 바로 기록하는 시작 화면입니다.
 위에서 아래 순서는 다음과 같습니다.
@@ -102,13 +104,13 @@
 
 ## 목표 탭 (G-01, G-02, G-03, G-04)
 
-[목표 탭 시안](./reference/goal-list.png)
+[목표 탭 시안](../reference/goal-list.png)
 
-[목표 상세 시안](./reference/goal-detail.png)
+[목표 상세 시안](../reference/goal-detail.png)
 
-[목표 만들기 시안](./reference/goal-new.png)
+[목표 만들기 시안](../reference/goal-new.png)
 
-[목표 보관함 시안](./reference/goal-archive.png)
+[목표 보관함 시안](../reference/goal-archive.png)
 
 진행 중인 목표 전체를 종류별 카드로 보는 목록 화면입니다. 위에서 아래 순서는 다음과 같습니다.
 
@@ -156,9 +158,9 @@
 
 ## 일정 탭 (S-01, S-02)
 
-[일정 탭 시안](./reference/schedule.png)
+[일정 탭 시안](../reference/schedule.png)
 
-[일정 추가 탭 시안](./reference/schedule-add.png)
+[일정 추가 탭 시안](../reference/schedule-add.png)
 
 하루 단위 시간표와 TO-DO를 함께 관리하는 화면입니다.
 
