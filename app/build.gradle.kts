@@ -59,6 +59,7 @@ configurations.matching {
 }
 
 dependencies {
+    implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.room3.common)
     implementation(libs.androidx.sqlite.bundled)
     implementation(libs.androidx.room3.runtime)
