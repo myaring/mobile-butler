@@ -34,6 +34,7 @@ androidx-room3-compiler = { group = "androidx.room3", name = "room3-compiler", v
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigation" }
 androidx-sqlite-bundled = { group = "androidx.sqlite", name = "sqlite-bundled", version = "sqlite" }
 androidx-room3-common = { group = "androidx.room3", name = "room3-common", version.ref = "room3Common" }
+androidx-compose-material-icons-core = { group = "androidx.compose.material", name = "material-icons-core" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
