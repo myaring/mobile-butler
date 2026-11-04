@@ -1,0 +1,129 @@
+# Copyright (c) 2026 Jeong Hoon Kim. All rights reserved.
+stages:
+  - safety
+  - lint
+  - test
+  - security-scan
+
+variables:
+  CARGO_TERM_COLOR: always
+
+# ===========================================================================
+# 1. Security & Safety: Secret Scanning and Repository Hygiene
+# ===========================================================================
+secret-detection:
+  stage: safety
+  image:
+    name: zricethezav/gitleaks:latest
+    entrypoint: [""]
+  script:
+    - gitleaks detect --verbose --no-git --source .
+  allow_failure: true
+
+hygiene-check:
+  stage: safety
+  image: alpine:latest
+  before_script:
+    - apk add --no-cache git grep
+  script:
+    - echo "Scanning for unresolved git conflict markers..."
+    - "! git grep -nE '<<<<<<< HEAD|=======|>>>>>>>' -- ':!*.pdf' ':!*.png' ':!*.jpg' ':!*.mp4' || (echo 'Error: Unresolved conflict markers found' && exit 1)"
+    - echo "Repository hygiene verification passed."
+
+# ===========================================================================
+# 2. Rust Quality & Security Workflow
+# ===========================================================================
+rust-fmt-clippy:
+  stage: lint
+  image: rust:latest
+  rules:
+    - exists:
+        - "**/Cargo.toml"
+        - "Cargo.toml"
+  before_script:
+    - rustup component add rustfmt clippy
+  script:
+    - |
+      if [ -f "Cargo.toml" ]; then
+        cargo fmt --all -- --check
+        cargo clippy --workspace --all-targets --all-features -- -D warnings
+      else
+        find . -name "Cargo.toml" -not -path "*/target/*" -execdir cargo fmt --all -- --check \;
+        find . -name "Cargo.toml" -not -path "*/target/*" -execdir cargo clippy --all-targets --all-features -- -D warnings \;
+      fi
+
+rust-test:
+  stage: test
+  image: rust:latest
+  rules:
+    - exists:
+        - "**/Cargo.toml"
+        - "Cargo.toml"
+  script:
+    - |
+      if [ -f "Cargo.toml" ]; then
+        cargo test --workspace --all-targets --all-features
+      else
+        find . -name "Cargo.toml" -not -path "*/target/*" -execdir cargo test --all-targets --all-features \;
+      fi
+
+rust-audit:
+  stage: security-scan
+  image: rust:latest
+  rules:
+    - exists:
+        - "**/Cargo.toml"
+        - "Cargo.toml"
+  before_script:
+    - cargo install cargo-audit --locked
+  script:
+    - |
+      if [ -f "Cargo.toml" ]; then
+        cargo audit
+      else
+        find . -name "Cargo.toml" -not -path "*/target/*" -execdir cargo audit \;
+      fi
+
+# ===========================================================================
+# 3. Docker Quality & Vulnerability Workflow
+# ===========================================================================
+docker-hadolint:
+  stage: lint
+  image: hadolint/hadolint:latest-alpine
+  rules:
+    - exists:
+        - "**/Dockerfile"
+        - "Dockerfile"
+  script:
+    - find . -name "Dockerfile*" -not -path "*/node_modules/*" -exec hadolint --ignore DL3008 --ignore DL3013 {} +
+
+docker-build:
+  stage: test
+  image: docker:27-cli
+  services:
+    - docker:27-dind
+  rules:
+    - exists:
+        - "**/Dockerfile"
+        - "Dockerfile"
+  script:
+    - |
+      if [ -f "Dockerfile" ]; then
+        docker build -t ci-test-image:latest -f Dockerfile .
+      else
+        FIRST_DF=$(find . -name "Dockerfile*" -not -path "*/node_modules/*" | head -n 1)
+        CONTEXT_DIR=$(dirname "$FIRST_DF")
+        docker build -t ci-test-image:latest -f "$FIRST_DF" "$CONTEXT_DIR"
+      fi
+
+docker-trivy-scan:
+  stage: security-scan
+  image:
+    name: aquasec/trivy:latest
+    entrypoint: [""]
+  rules:
+    - exists:
+        - "**/Dockerfile"
+        - "Dockerfile"
+  script:
+    - trivy fs --exit-code 0 --severity CRITICAL,HIGH .

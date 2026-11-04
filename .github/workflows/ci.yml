@@ -1,0 +1,136 @@
+# Copyright (c) 2026 Jeong Hoon Kim. All rights reserved.
+name: CI Safety & Quality Pipeline
+
+on:
+  push:
+    branches: [ "main", "master", "dev" ]
+  pull_request:
+    branches: [ "main", "master", "dev" ]
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  # ===========================================================================
+  # 1. Security & Safety: Secret Scanning and Repository Hygiene
+  # ===========================================================================
+  security-audit:
+    name: Security & Secret Audit
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Secret Scan (Gitleaks)
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        continue-on-error: true
+
+      - name: Repository Hygiene & Conflict Marker Verification
+        run: |
+          echo "Scanning for unresolved git conflict markers..."
+          ! git grep -nE '<<<<<<< HEAD|=======|>>>>>>>' -- ':!*.pdf' ':!*.png' ':!*.jpg' ':!*.mp4' || (echo "Error: Unresolved conflict markers found" && exit 1)
+          echo "Repository hygiene check completed successfully."
+
+  # ===========================================================================
+  # 2. Rust Quality & Security Workflow
+  # ===========================================================================
+  rust-workflow:
+    name: Rust Quality, Tests & Security Audit
+    runs-on: ubuntu-latest
+    if: hashFiles('**/Cargo.toml') != ''
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Rust Toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+
+      - name: Cache Cargo Dependencies
+        uses: Swatinem/rust-cache@v2
+
+      - name: Install cargo-audit
+        uses: taiki-e/install-action@cargo-audit
+
+      - name: Rust Formatting Check (cargo fmt)
+        run: |
+          if [ -f "Cargo.toml" ]; then
+            cargo fmt --all -- --check
+          else
+            find . -name "Cargo.toml" -not -path "*/target/*" -execdir cargo fmt --all -- --check \;
+          fi
+
+      - name: Rust Linter Check (cargo clippy)
+        run: |
+          if [ -f "Cargo.toml" ]; then
+            cargo clippy --workspace --all-targets --all-features -- -D warnings
+          else
+            find . -name "Cargo.toml" -not -path "*/target/*" -execdir cargo clippy --all-targets --all-features -- -D warnings \;
+          fi
+
+      - name: Rust Tests (cargo test)
+        run: |
+          if [ -f "Cargo.toml" ]; then
+            cargo test --workspace --all-targets --all-features
+          else
+            find . -name "Cargo.toml" -not -path "*/target/*" -execdir cargo test --all-targets --all-features \;
+          fi
+
+      - name: Rust Vulnerability Audit (cargo audit)
+        run: |
+          if [ -f "Cargo.toml" ]; then
+            cargo audit
+          else
+            find . -name "Cargo.toml" -not -path "*/target/*" -execdir cargo audit \;
+          fi
+
+  # ===========================================================================
+  # 3. Docker Quality & Vulnerability Workflow
+  # ===========================================================================
+  docker-workflow:
+    name: Docker Lint, Build & Trivy Scan
+    runs-on: ubuntu-latest
+    if: hashFiles('**/Dockerfile*') != ''
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Lint Dockerfile (Hadolint)
+        uses: hadolint/hadolint-action@v3.1.0
+        with:
+          recursive: true
+          ignore: DL3008,DL3013
+          failure-threshold: error
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Docker Image
+        run: |
+          if [ -f "Dockerfile" ]; then
+            docker build -t ci-test-image:latest -f Dockerfile .
+          else
+            FIRST_DF=$(find . -name "Dockerfile*" -not -path "*/node_modules/*" | head -n 1)
+            CONTEXT_DIR=$(dirname "$FIRST_DF")
+            docker build -t ci-test-image:latest -f "$FIRST_DF" "$CONTEXT_DIR"
+          fi
+
+      - name: Container Security Scan (Trivy)
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: 'ci-test-image:latest'
+          format: 'table'
+          exit-code: '0'
+          ignore-unfixed: true
+          vuln-type: 'os,library'
+          severity: 'CRITICAL,HIGH'
