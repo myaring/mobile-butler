@@ -8,9 +8,9 @@ stages:
 variables:
   CARGO_TERM_COLOR: always
 
-# ===========================================================================
+# ---------------------------------------------------------------------------
 # 1. Security & Safety: Secret Scanning and Repository Hygiene
-# ===========================================================================
+# ---------------------------------------------------------------------------
 secret-detection:
   stage: safety
   image:
@@ -27,12 +27,12 @@ hygiene-check:
     - apk add --no-cache git grep
   script:
     - echo "Scanning for unresolved git conflict markers..."
-    - "! git grep -nE '<<<<<<< HEAD|=======|>>>>>>>' -- ':!*.pdf' ':!*.png' ':!*.jpg' ':!*.mp4' || (echo 'Error: Unresolved conflict markers found' && exit 1)"
+    - "! git grep -nE '<<<<<<< HEAD|=======|>>>>>>>' -- ':!*.pdf' ':!*.png' ':!*.jpg' ':!*.mp4' ':!.github/workflows/*' ':!.gitlab-ci.yml' || (echo 'Error: Unresolved conflict markers found' && exit 1)"
     - echo "Repository hygiene verification passed."
 
-# ===========================================================================
+# ---------------------------------------------------------------------------
 # 2. Rust Quality & Security Workflow
-# ===========================================================================
+# ---------------------------------------------------------------------------
 rust-fmt-clippy:
   stage: lint
   image: rust:latest
@@ -84,9 +84,9 @@ rust-audit:
         find . -name "Cargo.toml" -not -path "*/target/*" -execdir cargo audit \;
       fi
 
-# ===========================================================================
+# ---------------------------------------------------------------------------
 # 3. Docker Quality & Vulnerability Workflow
-# ===========================================================================
+# ---------------------------------------------------------------------------
 docker-hadolint:
   stage: lint
   image: hadolint/hadolint:latest-alpine
