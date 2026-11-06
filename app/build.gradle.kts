@@ -42,7 +42,26 @@ android {
     }
 }
 
+ksp {
+    arg(
+        "room.schemaLocation",
+        "$projectDir/schemas"
+    )
+}
+
+configurations.matching {
+    it.name == "debugUnitTestRuntimeClasspath"
+}.configureEach {
+    resolutionStrategy.dependencySubstitution {
+        substitute(module("androidx.sqlite:sqlite-bundled"))
+            .using(module("androidx.sqlite:sqlite-bundled-jvm:2.7.1"))
+    }
+}
+
 dependencies {
+    implementation(libs.androidx.navigation.compose)
+    implementation(libs.androidx.room3.common)
+    implementation(libs.androidx.sqlite.bundled)
     implementation(libs.androidx.room3.runtime)
     ksp(libs.androidx.room3.compiler)
     implementation(platform(libs.androidx.compose.bom))
@@ -60,4 +79,5 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
     debugImplementation(libs.androidx.compose.ui.tooling)
+    implementation(libs.androidx.compose.material.icons.core)
 }
