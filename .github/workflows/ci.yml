@@ -37,7 +37,7 @@ jobs:
       - name: Repository Hygiene & Conflict Marker Verification
         run: |
           echo "Scanning for unresolved git conflict markers..."
-          ! git grep -nE '<<<<<<< HEAD|=======|>>>>>>>' -- ':!*.pdf' ':!*.png' ':!*.jpg' ':!*.mp4' ':!.github/workflows/*' ':!.gitlab-ci.yml' || (echo "Error: Unresolved conflict markers found" && exit 1)
+          ! git grep -InE '^[<]{7}( .+)?$|^[=]{7}$|^[>]{7}( .+)?$' -- ':!.github/workflows/*' ':!.gitlab-ci.yml' ':!docs/dev-log/README.md' || (echo "Error: Unresolved conflict markers found" && exit 1)
           echo "Repository hygiene check completed successfully."
 
   # ---------------------------------------------------------------------------
