@@ -1,0 +1,16 @@
+# Copyright (c) 2026 Jeong Hoon Kim. All rights reserved.
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Global allowlist for build artifacts, mock fixtures and documentation"
+paths = [
+    '''node_modules/''',
+    '''target/''',
+    '''dist/''',
+    '''build/''',
+    '''\.git/''',
+    '''\.pdf$''',
+    '''\.png$''',
+    '''\.jpg$'''
+]
