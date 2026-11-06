@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import java.time.Instant
 
-class RoomProgressRepository(
+open class RoomProgressRepository(
     private val database: ButlerDatabase,
 ) : ProgressRepository {
 

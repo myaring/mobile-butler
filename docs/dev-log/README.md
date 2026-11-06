@@ -55,3 +55,4 @@
 | 2026-10-29 | yuhan3958 | Room 3 기반 영속화 구현                                                              | [상세](2026-10-29-A5.md)                       |
 | 2026-11-03 | yuhan3958 | 도메인 규칙과 단위 테스트 구현                                                       | [상세](2026-11-03-A4.md)                       |
 | 2026-11-03 | 먀씨      | MbButton 3종 구현                                                                    | -                                              |
+| 2026-11-06 | yuhan3958 | [A-6] Repository 구현체 및 AppContainer 바인딩                                       | [상세](2026-11-06-A6-repository-impl-appcontainer.md) |
