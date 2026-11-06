@@ -1,13 +1,43 @@
 package dev.myaring.mobile_butler.ui.navigation
 
-// 현재 상태 selectedTab을 기반으로 파생될 수 있는 각종 상태들을 이 곳에 정의하세요.
+import dev.myaring.mobile_butler.domain.model.Goal
+import dev.myaring.mobile_butler.domain.model.GoalStatus
+import dev.myaring.mobile_butler.domain.model.ProgressEntry
+import java.time.LocalDate
+
+/**
+ * [C-12] 목표 화면 UI 상태.
+ */
 data class GoalScreenUiState(
-    val selectedTab: EGoalTab = EGoalTab.LIST
-)
-{
-    public val subTabOrdinal: Int
-        get() = when (selectedTab)
-        {
+    val selectedTab: EGoalTab = EGoalTab.LIST,
+    val goals: List<Goal> = emptyList(),
+    val selectedGoalId: String? = null,
+    val editingGoalId: String? = null,
+    val entries: Map<String, List<ProgressEntry>> = emptyMap(),
+    val showAchievedConfirmDialog: Boolean = false,
+    val pendingTargetValue: Double? = null,
+    val pendingDueDate: LocalDate? = null,
+) {
+    val activeGoals: List<Goal>
+        get() = goals.filter { it.status == GoalStatus.ACTIVE }
+
+    val archivedGoals: List<Goal>
+        get() = goals.filter { it.status == GoalStatus.COMPLETED }
+
+    val activeGoalsCount: Int
+        get() = activeGoals.size
+
+    val selectedGoal: Goal?
+        get() = goals.find { it.id == selectedGoalId } ?: goals.firstOrNull()
+
+    val editingGoal: Goal?
+        get() = goals.find { it.id == editingGoalId }
+
+    val selectedGoalEntries: List<ProgressEntry>
+        get() = selectedGoal?.let { entries[it.id] } ?: emptyList()
+
+    val subTabOrdinal: Int
+        get() = when (selectedTab) {
             EGoalTab.LIST -> 0
             EGoalTab.ARCHIVE -> 1
             else -> -1
