@@ -5,15 +5,25 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import dev.myaring.mobile_butler.domain.model.Goal
+import dev.myaring.mobile_butler.domain.model.GoalStatus
+import dev.myaring.mobile_butler.domain.model.GoalType
+import dev.myaring.mobile_butler.domain.repository.GoalRepository
 import dev.myaring.mobile_butler.ui.navigation.EGoalTab
 import dev.myaring.mobile_butler.ui.navigation.GoalScreenUiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import java.time.LocalDate
 
-class GoalScreenViewModel : ViewModel(), ITopBarViewModel
-{
-    // 관찰 가능한 변수를 이 곳에 선언하세요. Composable 구성 요소가 관찰합니다.
+/**
+ * [C-5] 목표 화면 ViewModel.
+ */
+class GoalScreenViewModel(
+    private val goalRepository: GoalRepository? = null,
+) : ViewModel(), ITopBarViewModel {
 
     private val _title = mutableStateOf("목표")
     override val title: State<String> = _title
@@ -22,56 +32,106 @@ class GoalScreenViewModel : ViewModel(), ITopBarViewModel
     override val showBackButton: State<Boolean> =
         derivedStateOf { _returnSubTabOrdinal.value >= 0 }
 
-    private val _uiState = MutableStateFlow(GoalScreenUiState())
-    public val uiState = _uiState.asStateFlow()
+    private val _uiState = MutableStateFlow(
+        GoalScreenUiState(
+            goals = defaultGoals()
+        )
+    )
+    val uiState = _uiState.asStateFlow()
 
-    public val currentTab: EGoalTab
+    init {
+        goalRepository?.let { repo ->
+            viewModelScope.launch {
+                repo.observeGoals().collect { list ->
+                    _uiState.update { it.copy(goals = list) }
+                }
+            }
+        }
+    }
+
+    val currentTab: EGoalTab
         get() = uiState.value.selectedTab
 
-    public override fun onBackTab()
-    {
-        when (_returnSubTabOrdinal.value)
-        {
+    override fun onBackTab() {
+        when (_returnSubTabOrdinal.value) {
             0 -> onChangeTabToList()
             1 -> onChangeTabToArchive()
         }
     }
 
-    public fun onChangeTabToList()
-    {
+    fun onChangeTabToList() {
         _returnSubTabOrdinal.value = -1
-        this.onChangeTab(EGoalTab.LIST)
+        onChangeTab(EGoalTab.LIST)
     }
 
-    public fun onChangeTabToDetail()
-    {
+    fun onChangeTabToDetail(goalId: String? = null) {
         _returnSubTabOrdinal.value = uiState.value.subTabOrdinal
-        this.onChangeTab(EGoalTab.DETAIL)
+        if (goalId != null) {
+            _uiState.update { it.copy(selectedGoalId = goalId) }
+        }
+        onChangeTab(EGoalTab.DETAIL)
     }
 
-    public fun onChangeTabToCreation()
-    {
+    fun onChangeTabToCreation() {
         _returnSubTabOrdinal.value = uiState.value.subTabOrdinal
-        this.onChangeTab(EGoalTab.CREATION)
+        onChangeTab(EGoalTab.CREATION)
     }
 
-    public fun onChangeTabToArchive()
-    {
+    fun onChangeTabToArchive() {
         _returnSubTabOrdinal.value = -1
-        this.onChangeTab(EGoalTab.ARCHIVE)
+        onChangeTab(EGoalTab.ARCHIVE)
     }
 
-    private fun onChangeTab(tab: EGoalTab)
-    {
+    fun selectGoal(goalId: String) {
+        _uiState.update { it.copy(selectedGoalId = goalId) }
+        onChangeTabToDetail(goalId)
+    }
+
+    private fun onChangeTab(tab: EGoalTab) {
         _uiState.update { it.copy(selectedTab = tab) }
-
-        // TEMP: 임시 코드입니다. 상단 바 제목을 커스텀하려면 다른 이벤트 함수에서 _title.value를 설정하세요.
-        _title.value = when (tab)
-        {
+        _title.value = when (tab) {
             EGoalTab.LIST -> "목표"
             EGoalTab.DETAIL -> "목표 상세"
             EGoalTab.CREATION -> "목표 만들기"
             EGoalTab.ARCHIVE -> "목표 보관함"
         }
+    }
+
+    companion object {
+        fun defaultGoals(): List<Goal> = listOf(
+            Goal(
+                id = "sample-1",
+                title = "코틀린 완벽 가이드",
+                type = GoalType.CUMULATIVE,
+                targetValue = 100.0,
+                unit = "쪽",
+                startDate = LocalDate.now(),
+                dueDate = LocalDate.now().plusDays(10),
+                priority = 0,
+                status = GoalStatus.ACTIVE
+            ),
+            Goal(
+                id = "sample-2",
+                title = "모바일 집사 프로젝트",
+                type = GoalType.CUMULATIVE,
+                targetValue = 20.0,
+                unit = "커밋",
+                startDate = LocalDate.now(),
+                dueDate = LocalDate.now().plusDays(7),
+                priority = 1,
+                status = GoalStatus.ACTIVE
+            ),
+            Goal(
+                id = "sample-3",
+                title = "매일 아침 달리기",
+                type = GoalType.RECURRING,
+                targetValue = 5.0,
+                unit = "km",
+                startDate = LocalDate.now(),
+                dueDate = null,
+                priority = 2,
+                status = GoalStatus.ACTIVE
+            )
+        )
     }
 }
