@@ -5,15 +5,35 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import dev.myaring.mobile_butler.domain.model.EndReason
+import dev.myaring.mobile_butler.domain.model.EntrySource
+import dev.myaring.mobile_butler.domain.model.Goal
+import dev.myaring.mobile_butler.domain.model.GoalStatus
+import dev.myaring.mobile_butler.domain.model.GoalType
+import dev.myaring.mobile_butler.domain.model.ProgressEntry
+import dev.myaring.mobile_butler.domain.repository.GoalRepository
+import dev.myaring.mobile_butler.domain.repository.ProgressRepository
 import dev.myaring.mobile_butler.ui.navigation.EGoalTab
 import dev.myaring.mobile_butler.ui.navigation.GoalScreenUiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import java.time.Clock
+import java.time.Instant
+import java.time.LocalDate
+import java.time.ZoneOffset
+import java.util.UUID
 
-class GoalScreenViewModel : ViewModel(), ITopBarViewModel
-{
-    // 관찰 가능한 변수를 이 곳에 선언하세요. Composable 구성 요소가 관찰합니다.
+/**
+ * [C-7] 목표 화면 ViewModel.
+ */
+class GoalScreenViewModel(
+    private val goalRepository: GoalRepository? = null,
+    private val progressRepository: ProgressRepository? = null,
+    private val clock: Clock = Clock.systemDefaultZone(),
+) : ViewModel(), ITopBarViewModel {
 
     private val _title = mutableStateOf("목표")
     override val title: State<String> = _title
@@ -22,56 +42,197 @@ class GoalScreenViewModel : ViewModel(), ITopBarViewModel
     override val showBackButton: State<Boolean> =
         derivedStateOf { _returnSubTabOrdinal.value >= 0 }
 
-    private val _uiState = MutableStateFlow(GoalScreenUiState())
-    public val uiState = _uiState.asStateFlow()
+    private val _uiState = MutableStateFlow(
+        GoalScreenUiState(
+            goals = defaultGoals(),
+            entries = defaultEntries()
+        )
+    )
+    val uiState = _uiState.asStateFlow()
 
-    public val currentTab: EGoalTab
+    init {
+        goalRepository?.let { repo ->
+            viewModelScope.launch {
+                repo.observeGoals().collect { list ->
+                    _uiState.update { it.copy(goals = list) }
+                }
+            }
+        }
+    }
+
+    val currentTab: EGoalTab
         get() = uiState.value.selectedTab
 
-    public override fun onBackTab()
-    {
-        when (_returnSubTabOrdinal.value)
-        {
+    override fun onBackTab() {
+        when (_returnSubTabOrdinal.value) {
             0 -> onChangeTabToList()
             1 -> onChangeTabToArchive()
         }
     }
 
-    public fun onChangeTabToList()
-    {
+    fun onChangeTabToList() {
         _returnSubTabOrdinal.value = -1
-        this.onChangeTab(EGoalTab.LIST)
+        onChangeTab(EGoalTab.LIST)
     }
 
-    public fun onChangeTabToDetail()
-    {
+    fun onChangeTabToDetail(goalId: String? = null) {
         _returnSubTabOrdinal.value = uiState.value.subTabOrdinal
-        this.onChangeTab(EGoalTab.DETAIL)
+        if (goalId != null) {
+            _uiState.update { it.copy(selectedGoalId = goalId) }
+        }
+        onChangeTab(EGoalTab.DETAIL)
     }
 
-    public fun onChangeTabToCreation()
-    {
+    fun onChangeTabToCreation() {
         _returnSubTabOrdinal.value = uiState.value.subTabOrdinal
-        this.onChangeTab(EGoalTab.CREATION)
+        onChangeTab(EGoalTab.CREATION)
     }
 
-    public fun onChangeTabToArchive()
-    {
+    fun onChangeTabToArchive() {
         _returnSubTabOrdinal.value = -1
-        this.onChangeTab(EGoalTab.ARCHIVE)
+        onChangeTab(EGoalTab.ARCHIVE)
     }
 
-    private fun onChangeTab(tab: EGoalTab)
-    {
+    fun selectGoal(goalId: String) {
+        _uiState.update { it.copy(selectedGoalId = goalId) }
+        onChangeTabToDetail(goalId)
+    }
+
+    fun recordProgress(goalId: String, amount: Double) {
+        val entry = ProgressEntry(
+            id = UUID.randomUUID().toString(),
+            goalId = goalId,
+            recordedAt = Instant.now(clock),
+            recordedOffset = ZoneOffset.ofHours(9),
+            amount = amount,
+            source = EntrySource.MANUAL
+        )
+
+        _uiState.update { current ->
+            val currentEntries = current.entries[goalId] ?: emptyList()
+            val newEntriesMap = current.entries.toMutableMap()
+            newEntriesMap[goalId] = currentEntries + entry
+            current.copy(entries = newEntriesMap)
+        }
+    }
+
+    fun completeGoalManually(goalId: String) {
+        val today = LocalDate.now(clock)
+        _uiState.update { current ->
+            val updatedGoals = current.goals.map { g ->
+                if (g.id == goalId) {
+                    g.copy(
+                        status = GoalStatus.COMPLETED,
+                        endReason = EndReason.MANUAL,
+                        endedAt = today
+                    )
+                } else {
+                    g
+                }
+            }
+            current.copy(goals = updatedGoals)
+        }
+    }
+
+    fun extendDueDate(goalId: String, newDueDate: LocalDate) {
+        _uiState.update { current ->
+            val updatedGoals = current.goals.map { g ->
+                if (g.id == goalId) {
+                    g.copy(dueDate = newDueDate, overdueNoticeShown = false)
+                } else {
+                    g
+                }
+            }
+            current.copy(goals = updatedGoals)
+        }
+    }
+
+    private fun onChangeTab(tab: EGoalTab) {
         _uiState.update { it.copy(selectedTab = tab) }
-
-        // TEMP: 임시 코드입니다. 상단 바 제목을 커스텀하려면 다른 이벤트 함수에서 _title.value를 설정하세요.
-        _title.value = when (tab)
-        {
+        _title.value = when (tab) {
             EGoalTab.LIST -> "목표"
             EGoalTab.DETAIL -> "목표 상세"
             EGoalTab.CREATION -> "목표 만들기"
             EGoalTab.ARCHIVE -> "목표 보관함"
         }
+    }
+
+    companion object {
+        fun defaultGoals(): List<Goal> = listOf(
+            Goal(
+                id = "sample-1",
+                title = "코틀린 완벽 가이드",
+                type = GoalType.CUMULATIVE,
+                targetValue = 100.0,
+                unit = "쪽",
+                startDate = LocalDate.now().minusDays(5),
+                dueDate = LocalDate.now().plusDays(10),
+                priority = 0,
+                status = GoalStatus.ACTIVE
+            ),
+            Goal(
+                id = "sample-2",
+                title = "모바일 집사 프로젝트",
+                type = GoalType.CUMULATIVE,
+                targetValue = 20.0,
+                unit = "커밋",
+                startDate = LocalDate.now().minusDays(3),
+                dueDate = LocalDate.now().plusDays(7),
+                priority = 1,
+                status = GoalStatus.ACTIVE
+            ),
+            Goal(
+                id = "sample-3",
+                title = "알고리즘 문제 풀이",
+                type = GoalType.CUMULATIVE,
+                targetValue = 50.0,
+                unit = "문제",
+                startDate = LocalDate.now().minusDays(15),
+                dueDate = LocalDate.now().minusDays(1),
+                priority = 2,
+                status = GoalStatus.COMPLETED,
+                endReason = EndReason.MANUAL,
+                endedAt = LocalDate.now().minusDays(1)
+            )
+        )
+
+        fun defaultEntries(): Map<String, List<ProgressEntry>> = mapOf(
+            "sample-1" to listOf(
+                ProgressEntry(
+                    id = "e-1",
+                    goalId = "sample-1",
+                    recordedAt = Instant.now().minusSeconds(86400 * 2),
+                    recordedOffset = ZoneOffset.ofHours(9),
+                    amount = 20.0,
+                    source = EntrySource.MANUAL
+                ),
+                ProgressEntry(
+                    id = "e-2",
+                    goalId = "sample-1",
+                    recordedAt = Instant.now().minusSeconds(86400),
+                    recordedOffset = ZoneOffset.ofHours(9),
+                    amount = 15.0,
+                    source = EntrySource.MANUAL
+                ),
+                ProgressEntry(
+                    id = "e-3",
+                    goalId = "sample-1",
+                    recordedAt = Instant.now(),
+                    recordedOffset = ZoneOffset.ofHours(9),
+                    amount = 25.0,
+                    source = EntrySource.MANUAL
+                )
+            ),
+            "sample-3" to listOf(
+                ProgressEntry(
+                    id = "e-4",
+                    goalId = "sample-3",
+                    recordedAt = Instant.now().minusSeconds(86400 * 2),
+                    recordedOffset = ZoneOffset.ofHours(9),
+                    amount = 30.0,
+                    source = EntrySource.MANUAL
+                )
+            )
+        )
     }
 }
