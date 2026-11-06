@@ -175,8 +175,8 @@ private fun AppNavigationBar(navController: NavHostController, implScreens: Map<
     {
         AlertDialog(
             onDismissRequest = { showNotReadyDialog = false },
-            title = { Text("준비 중") },
-            text = { Text("기대해 주세요") },
+            title = { Text("준비 중이에요") },
+            text = { Text("일정 기능은 다음 업데이트에서 제공될 예정입니다.") },
             confirmButton = {
                 TextButton(
                     onClick = { showNotReadyDialog = false }
