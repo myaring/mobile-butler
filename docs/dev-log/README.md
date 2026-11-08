@@ -56,3 +56,5 @@
 | 2026-11-03 | yuhan3958 | 도메인 규칙과 단위 테스트 구현                                                       | [상세](2026-11-03-A4.md)                       |
 | 2026-11-03 | 먀씨      | MbButton 3종 구현                                                                    | -                                              |
 | 2026-11-06 | Aetherx86 | [B-3] MbProgressBar 구현                                                             | [상세](2026-11-06-B3-mb-progress-bar.md)       |
+| 2026-11-06 | Aetherx86 | [A-7] 가짜 저장소와 샘플 데이터 팩토리 구현                                          | [상세](2026-11-06-A7-fake-repositories.md)     |
+| 2026-11-06 | yuhan3958 | [A-6] Repository 구현체 및 AppContainer 바인딩                                       | [상세](2026-11-06-A6-repository-impl-appcontainer.md) |
