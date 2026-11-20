@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import java.time.LocalDate
 
-class RoomGoalRepository(
+open class RoomGoalRepository(
     private val database: ButlerDatabase,
 ) : GoalRepository {
 

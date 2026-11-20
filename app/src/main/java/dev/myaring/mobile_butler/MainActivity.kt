@@ -11,11 +11,13 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -30,6 +32,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import dev.myaring.mobile_butler.domain.viewmodel.ITopBarViewModel
+import dev.myaring.mobile_butler.ui.component.LocalSnackbarHostState
+import dev.myaring.mobile_butler.ui.component.MbSnackbarHost
 import dev.myaring.mobile_butler.ui.navigation.EScreen
 import dev.myaring.mobile_butler.ui.navigation.Screen
 import dev.myaring.mobile_butler.ui.theme.MbOnSurface
@@ -53,27 +57,33 @@ class MainActivity : ComponentActivity()
                 val implScreens = appContainer.implScreens
 
                 var vmTopBar by remember { mutableStateOf<ITopBarViewModel?>(null) }
+                val snackbarHostState = remember { SnackbarHostState() }
 
                 fun notifyTopBar(viewModel: ITopBarViewModel)
                 {
                     vmTopBar = viewModel
                 }
 
-                Scaffold(
-                    modifier = Modifier.fillMaxSize(),
-                    topBar = {
-                        AppTopBar(vmTopBar)
-                    },
-                    bottomBar = {
-                        AppNavigationBar(navController, implScreens)
-                    },
-                    content = { innerPadding ->
-                        AppContent(
-                            navController = navController,
-                            implScreens = implScreens,
-                            onNotifyTopBar = ::notifyTopBar,
-                            modifier = Modifier.padding(innerPadding))
-                    })
+                CompositionLocalProvider(LocalSnackbarHostState provides snackbarHostState) {
+                    Scaffold(
+                        modifier = Modifier.fillMaxSize(),
+                        topBar = {
+                            AppTopBar(vmTopBar)
+                        },
+                        bottomBar = {
+                            AppNavigationBar(navController, implScreens)
+                        },
+                        snackbarHost = {
+                            MbSnackbarHost(hostState = snackbarHostState)
+                        },
+                        content = { innerPadding ->
+                            AppContent(
+                                navController = navController,
+                                implScreens = implScreens,
+                                onNotifyTopBar = ::notifyTopBar,
+                                modifier = Modifier.padding(innerPadding))
+                        })
+                }
             }
         }
     }
@@ -175,8 +185,8 @@ private fun AppNavigationBar(navController: NavHostController, implScreens: Map<
     {
         AlertDialog(
             onDismissRequest = { showNotReadyDialog = false },
-            title = { Text("준비 중") },
-            text = { Text("기대해 주세요") },
+            title = { Text("준비 중이에요") },
+            text = { Text("일정 기능은 다음 업데이트에서 제공될 예정입니다.") },
             confirmButton = {
                 TextButton(
                     onClick = { showNotReadyDialog = false }
