@@ -55,6 +55,7 @@
 | 2026-10-29 | yuhan3958 | Room 3 기반 영속화 구현                                                              | [상세](2026-10-29-A5.md)                       |
 | 2026-11-03 | yuhan3958 | 도메인 규칙과 단위 테스트 구현                                                       | [상세](2026-11-03-A4.md)                       |
 | 2026-11-03 | 먀씨      | MbButton 3종 구현                                                                    | -                                              |
+| 2026-11-06 | Aetherx86 | [B-7] GoalListItem 컴포넌트 구현                                                     | [상세](2026-11-06-B7-goal-list-item.md)        |
 | 2026-11-06 | Aetherx86 | [B-5] GoalCard 펼친 상태 (누적형) 구현                                                | [상세](2026-11-06-B5-goal-card-expanded.md)    |
 | 2026-11-06 | Aetherx86 | ButlerLine 컴포넌트 및 ButlerMessages 집사 문구 규칙 구현                            | [상세](2026-11-06-B4-butler-messages.md)       |
 | 2026-11-06 | Aetherx86 | [B-6] GoalCard 접힌 상태 컴포넌트 구현                                               | [상세](2026-11-06-B6-goal-card-collapsed.md)   |
