@@ -4,8 +4,15 @@ import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
+import dev.myaring.mobile_butler.domain.repository.GoalRepository
+import dev.myaring.mobile_butler.domain.repository.ProgressRepository
+import java.time.Clock
 
-class TodayScreenViewModel : ViewModel(), ITopBarViewModel
+class TodayScreenViewModel(
+    val goalRepository: GoalRepository? = null,
+    val progressRepository: ProgressRepository? = null,
+    val clock: Clock? = null,
+) : ViewModel(), ITopBarViewModel
 {
     private val _title = mutableStateOf("오늘 할 일")
     override val title: State<String> = _title
