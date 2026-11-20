@@ -9,8 +9,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
+import dev.myaring.mobile_butler.MobileButlerApplication
 import dev.myaring.mobile_butler.domain.viewmodel.ITopBarViewModel
 import dev.myaring.mobile_butler.domain.viewmodel.TodayScreenViewModel
 import dev.myaring.mobile_butler.ui.theme.MbSpacing
@@ -24,7 +26,13 @@ public val todayScreenImpl = Screen(
 @Composable
 private fun TodayScreenRouter(onNotifyTopBar: (ITopBarViewModel) -> Unit, modifier: Modifier)
 {
-    val viewModel: TodayScreenViewModel = viewModel()
+    val context = LocalContext.current
+    val factory = (context.applicationContext as? MobileButlerApplication)?.container?.viewModelFactory
+    val viewModel: TodayScreenViewModel = if (factory != null) {
+        viewModel(factory = factory)
+    } else {
+        viewModel()
+    }
 
     onNotifyTopBar(viewModel)
     TodayScreenContent(viewModel, modifier)
