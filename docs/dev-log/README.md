@@ -56,3 +56,12 @@
 | 2026-11-03 | yuhan3958 | 도메인 규칙과 단위 테스트 구현                                                       | [상세](2026-11-03-A4.md)                       |
 | 2026-11-03 | 먀씨      | MbButton 3종 구현                                                                    | -                                              |
 | 2026-11-06 | Aetherx86 | [C-2] TodayViewModel 구현                                                            | [상세](2026-11-06-C2-today-viewmodel.md)       |
+| 2026-11-06 | Aetherx86 | [B-9] 기록 스낵바와 되돌리기 호스트 구현                                             | [상세](2026-11-06-B9-snackbar-undo-host.md)    |
+| 2026-11-06 | Aetherx86 | [B-8] 기록 시트 UI 구현                                                              | [상세](2026-11-06-B8-record-sheet.md)          |
+| 2026-11-06 | Aetherx86 | [B-7] GoalListItem 컴포넌트 구현                                                     | [상세](2026-11-06-B7-goal-list-item.md)        |
+| 2026-11-06 | Aetherx86 | [B-5] GoalCard 펼친 상태 (누적형) 구현                                                | [상세](2026-11-06-B5-goal-card-expanded.md)    |
+| 2026-11-06 | Aetherx86 | ButlerLine 컴포넌트 및 ButlerMessages 집사 문구 규칙 구현                            | [상세](2026-11-06-B4-butler-messages.md)       |
+| 2026-11-06 | Aetherx86 | [B-6] GoalCard 접힌 상태 컴포넌트 구현                                               | [상세](2026-11-06-B6-goal-card-collapsed.md)   |
+| 2026-11-06 | Aetherx86 | [B-3] MbProgressBar 구현                                                             | [상세](2026-11-06-B3-mb-progress-bar.md)       |
+| 2026-11-06 | Aetherx86 | [A-7] 가짜 저장소와 샘플 데이터 팩토리 구현                                          | [상세](2026-11-06-A7-fake-repositories.md)     |
+| 2026-11-06 | yuhan3958 | [A-6] Repository 구현체 및 AppContainer 바인딩                                       | [상세](2026-11-06-A6-repository-impl-appcontainer.md) |
